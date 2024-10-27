@@ -1,6 +1,7 @@
 library(ggplot2)
 library(dplyr)
 library(R6)
+library(ggthemes)
 
 StudyTimeGraph <- R6Class("StudyTimeGraph",
   public = list(
@@ -26,12 +27,16 @@ StudyTimeGraph <- R6Class("StudyTimeGraph",
       avg_study_time <- mean(aggregated_data$Total_Study_Time_Minutes, na.rm = TRUE)
       
       ggplot(aggregated_data, aes(x = as.Date(Date), y = Total_Study_Time_Minutes)) +
-        geom_bar(stat = "identity") +
+        geom_bar(stat = "identity", fill = "skyblue") +
         geom_hline(yintercept = avg_study_time, color = "red", linetype = "dashed") +
         labs(title = "Distribution of Study Times",
              x = "Date",
              y = "Total Study Time (minutes)") +
-        theme_minimal()
+        theme_economist() +
+        scale_fill_economist() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+              axis.title.x = element_text(vjust = -0.5),
+              plot.margin = margin(t = 10, r = 10, b = 30, l = 10))
     }
   )
 )

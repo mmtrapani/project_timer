@@ -186,7 +186,7 @@ server <- function(input, output, session) {
     if (input$project_dropdown != "") {
       file_name <- paste0(input$directory, "/", input$project_dropdown)
       if (file.exists(file_name)) {
-        study_time_graph <- StudyTimeGraph$new(file_name) # nolint: object_usage_linter.
+        study_time_graph <- StudyTimeGraph$new(file_name)
         study_time_graph$generate_plot()
       }
     }
