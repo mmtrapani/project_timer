@@ -65,6 +65,10 @@ This will launch the Shiny app in your default web browser.
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE.txt](./LICENSE.txt) file for details.
+
 ---
 
 Feel free to customize this README further based on your specific needs and additional details about your project.
