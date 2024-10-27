@@ -1,6 +1,9 @@
 library(shiny)
 library(lubridate)
 
+# Source the study_time_graph.R script
+source("study_time_graph.R")
+
 # Define the UI
 ui <- fluidPage(
   titlePanel("Project Timer"),
@@ -12,7 +15,9 @@ ui <- fluidPage(
       actionButton("start", "Start"),
       actionButton("stop", "Stop"),
       textOutput("timer_status"),
-      textOutput("elapsed_time")
+      textOutput("elapsed_time"),
+      hr(),
+      plotOutput("study_time_plot") # Add plot output for study time distribution
     ),
     mainPanel(
       tableOutput("log_table")
@@ -174,6 +179,17 @@ server <- function(input, output, session) {
   # Render log table
   output$log_table <- renderTable({
     log_entries()
+  })
+  
+  # Generate the study time distribution plot
+  output$study_time_plot <- renderPlot({
+    if (input$project_dropdown != "") {
+      file_name <- paste0(input$directory, "/", input$project_dropdown)
+      if (file.exists(file_name)) {
+        study_time_graph <- StudyTimeGraph$new(file_name)
+        study_time_graph$generate_plot()
+      }
+    }
   })
   
   # Stop the Shiny server when the session ends
