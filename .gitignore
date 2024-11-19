@@ -3,3 +3,14 @@ Insurance_accounting_disc.csv
 project_timer.r
 .Rhistory
 .DS_Store
+
+# Ignore global .RProfile
+~/.RProfile
+# Ignore the renv folder (local project library)
+renv/
+
+# Do not ignore the lockfile for reproducibility
+!renv.lock
+
+# Ignore local .RProfile
+.RProfile
