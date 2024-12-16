@@ -17,3 +17,6 @@ renv/
 
 # Ignore .vscode settings
 .vscode/
+
+# Ignore Insurance_accounting_disc.xlsx
+Insurance_accounting_disc.xlsx
