@@ -31,6 +31,7 @@ StudyTimeGraph <- R6Class("StudyTimeGraph",
     },
     
     generate_plot = function() {
+      # do plotly integration here
       # Summarize total study time per day
       aggregated_data <- self$log_data %>%
         group_by(Date) %>%
