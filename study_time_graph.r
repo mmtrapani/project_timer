@@ -31,7 +31,7 @@ StudyTimeGraph <- R6Class("StudyTimeGraph",
     },
     
     generate_plot = function() {
-      # do plotly integration here
+      
       # Summarize total study time per day
       aggregated_data <- self$log_data %>%
         group_by(Date) %>%
@@ -40,20 +40,23 @@ StudyTimeGraph <- R6Class("StudyTimeGraph",
       # Calculate the average study time for reference
       avg_study_time <- mean(aggregated_data$Total_Study_Time_Minutes, na.rm = TRUE)
       
-      # Generate a bar plot with ggplot
-      ggplot(aggregated_data, aes(x = as.Date(Date), y = Total_Study_Time_Minutes)) +
-        geom_bar(stat = "identity", fill = "skyblue") +
-        # Add a horizontal line indicating the average study time
-        geom_hline(yintercept = avg_study_time, color = "red", linetype = "dashed") +
-        labs(title = "Distribution of Study Times",
-             x = "Date",
-             y = "Total Study Time (minutes)") +
-        # Apply the Economist theme for aesthetics
-        theme_economist() +
-        scale_fill_economist() +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-              axis.title.x = element_text(vjust = -0.5),
-              plot.margin = margin(t = 10, r = 10, b = 30, l = 10))
+      # Generate a bar plot with Plotly
+      plot <- plot_ly(aggregated_data, x = ~as.Date(Date), y = ~Total_Study_Time_Minutes, type = 'bar', 
+                      marker = list(color = 'skyblue')) %>%
+        layout(title = "Distribution of Study Times",
+               xaxis = list(title = "Date", tickangle = 45),
+               yaxis = list(title = "Total Study Time (minutes)"),
+               shapes = list(
+                 list(
+                   type = "line",
+                   x0 = min(as.Date(aggregated_data$Date)), x1 = max(as.Date(aggregated_data$Date)),
+                   y0 = avg_study_time, y1 = avg_study_time,
+                   line = list(color = "red", dash = "dash")
+                 )
+               ))
+      
+      return(plot)
     }
+    
   )
 )

@@ -1,5 +1,6 @@
 library(shiny)
 library(lubridate)
+library(plotly)
 
 # Source the study_time_graph.R script
 source("study_time_graph.R")
@@ -14,70 +15,37 @@ ui <- fluidPage(
         top: 10px;
         right: 10px;
       }
-      .night-mode {
-        background-color: #2c3e50;
-        color: #ecf0f1;
-      }
-      .night-mode .shiny-output-error {
-        color: #e74c3c;
-      }
-      .night-mode .form-control {
-        background-color: #2b3e50;
-        color: #ecf0f1;
-        border: 1px solid #ecf0f1;
-      }
-      .night-mode .btn {
-        background-color: #34495e;
-        color: #ecf0f1;
-        border: 1px solid #ecf0f1;
-      }
-      .night-mode .selectize-input {
-        background-color: #2b3e50;
-        color: #ecf0f1;
-        border: 1px solid #ecf0f1;
-      }
-      .night-mode .selectize-dropdown {
-        background-color: #2b3e50;
-        color: #ecf0f1;
-      }
-      .night-mode label {
-        color: #ecf0f1;
-      }
-      .night-mode .well {
-        background-color: #2b3e50;
-        border: 1px solid #ecf0f1;
-      }
-    ")),
-    tags$script(HTML("
-      Shiny.addCustomMessageHandler('toggleNightMode', function(nightMode) {
-        if (nightMode) {
-          document.body.classList.add('night-mode');
-        } else {
-          document.body.classList.remove('night-mode');
-        }
-      });
     "))
   ),
   div(class = "toggle-btn",
       checkboxInput("night_mode", "Night Mode", value = FALSE)
   ),
-  sidebarLayout(
-    sidebarPanel(
-      textInput("directory", "Directory for Projects", value = getwd()), # Directory input
-      selectInput("project_dropdown", "Select Existing Project", choices = NULL), # Dropdown for existing projects
-      textInput("new_project", "Or Create New Project (Leave blank if selecting existing)"), # Text input for new project
-      actionButton("start", "Start"),
-      actionButton("stop", "Stop"),
-      textOutput("timer_status"),
-      textOutput("elapsed_time"),
-      hr(),
-      plotOutput("study_time_plot") # Add plot output for study time distribution
+  
+  # Tab-based layout
+  tabsetPanel(
+    tabPanel("Timer",
+             sidebarLayout(
+               sidebarPanel(
+                 textInput("directory", "Directory for Projects", value = getwd()), # Directory input
+                 selectInput("project_dropdown", "Select Existing Project", choices = NULL), # Dropdown for projects
+                 textInput("new_project", "Or Create New Project"), # New project text input
+                 actionButton("start", "Start"),
+                 actionButton("stop", "Stop"),
+                 textOutput("timer_status"),
+                 textOutput("elapsed_time")
+               ),
+               mainPanel(
+                 tableOutput("log_table") # Log table display
+               )
+             )
     ),
-    mainPanel(
-      tableOutput("log_table")
+    
+    tabPanel("Study Plot",
+             plotlyOutput("study_time_plotly") # Plotly plot output
     )
   )
 )
+
 
 # Define the server
 server <- function(input, output, session) {
@@ -235,16 +203,17 @@ server <- function(input, output, session) {
     log_entries()
   })
   
-  # Generate the study time distribution plot
-  output$study_time_plot <- renderPlot({
+  # Generate the study time distribution plot (using Plotly)
+  output$study_time_plotly <- renderPlotly({
     if (input$project_dropdown != "") {
       file_name <- paste0(input$directory, "/", input$project_dropdown)
       if (file.exists(file_name)) {
         study_time_graph <- StudyTimeGraph$new(file_name)
-        study_time_graph$generate_plot()
+        study_time_graph$generate_plot() # This function should return a Plotly object
       }
     }
   })
+  
   
   observe({
     if (input$night_mode) {
